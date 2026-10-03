@@ -1,6 +1,7 @@
 import{STEM_TAXONOMY}from'../knowledge/stemTaxonomy';
 import{formulasFor}from'../knowledge/formulaLibrary';
-export interface Classification{subject:string;topic:string;problemType:string;confidence:number;evidence:string[]}\nexport interface FormulaCandidate{id:string;formula:string;target:string;requires:string[];missing:string[];matchScore:number}\nexport interface ProblemAnalysis{originalQuestion:string;givens:string[];find:string[];conditions:string[];objects:string[];classification:Classification;formulaCandidates:FormulaCandidate[]}
+import{recognizeVariables,symbolsAvailable,RecognizedVariable}from'./variableRecognizer';
+export interface Classification{subject:string;topic:string;problemType:string;confidence:number;evidence:string[]}\nexport interface FormulaCandidate{id:string;formula:string;target:string;requires:string[];missing:string[];matchScore:number}\nexport interface ProblemAnalysis{originalQuestion:string;givens:string[];find:string[];conditions:string[];objects:string[];variables:RecognizedVariable[];classification:Classification;formulaCandidates:FormulaCandidate[]}
 
 const objectWords=['box','ball','car','block','person','stone','projectile','incline','ramp','circle','triangle','spring','pulley'];
 
@@ -31,6 +32,11 @@ export function analyzeQuestion(question:string):ProblemAnalysis{
   momentum:'p','kinetic energy':'KE','potential energy':'PE',molarity:'M','ph':'pH'
  };
  const target=Object.entries(targetAliases).find(([name])=>targetText.includes(name))?.[1];
- const formulaCandidates=formulasFor(classification.problemType,target).map(f=>({id:f.id,formula:f.formula,target:f.target,requires:f.requires,missing:[],matchScore:target?1:.7}));
- return{originalQuestion:q,givens:[...new Set(givens)],find,conditions:[...new Set(conditions)],objects:[...new Set(objects)],classification,formulaCandidates};
+ const variables=recognizeVariables(q);const available=symbolsAvailable(variables,q);
+ const formulaCandidates=formulasFor(classification.problemType,target).map(f=>{
+  const missing=f.requires.filter(symbol=>!available.has(symbol));
+  const coverage=(f.requires.length-missing.length)/Math.max(1,f.requires.length);
+  return{id:f.id,formula:f.formula,target:f.target,requires:f.requires,missing,matchScore:Number(((target?0.35:0.15)+coverage*0.65).toFixed(2))};
+ }).sort((a,b)=>b.matchScore-a.matchScore);
+ return{originalQuestion:q,givens:[...new Set(givens)],find,conditions:[...new Set(conditions)],objects:[...new Set(objects)],variables,classification,formulaCandidates};
 }
