@@ -1,7 +1,8 @@
 import{STEM_TAXONOMY}from'../knowledge/stemTaxonomy';
 import{formulasFor}from'../knowledge/formulaLibrary';
 import{recognizeVariables,symbolsAvailable,RecognizedVariable}from'./variableRecognizer';
-export interface Classification{subject:string;topic:string;problemType:string;confidence:number;evidence:string[]}\nexport interface FormulaCandidate{id:string;formula:string;target:string;requires:string[];missing:string[];matchScore:number}\nexport interface ProblemAnalysis{originalQuestion:string;givens:string[];find:string[];conditions:string[];objects:string[];variables:RecognizedVariable[];classification:Classification;formulaCandidates:FormulaCandidate[]}
+import{rearrangeFormula,RearrangementResult}from'./formulaManipulator';
+export interface Classification{subject:string;topic:string;problemType:string;confidence:number;evidence:string[]}\nexport interface FormulaCandidate{id:string;formula:string;target:string;requires:string[];missing:string[];matchScore:number;rearrangement:RearrangementResult}\nexport interface ProblemAnalysis{originalQuestion:string;givens:string[];find:string[];conditions:string[];objects:string[];variables:RecognizedVariable[];classification:Classification;formulaCandidates:FormulaCandidate[]}
 
 const objectWords=['box','ball','car','block','person','stone','projectile','incline','ramp','circle','triangle','spring','pulley'];
 
@@ -36,7 +37,7 @@ export function analyzeQuestion(question:string):ProblemAnalysis{
  const formulaCandidates=formulasFor(classification.problemType,target).map(f=>{
   const missing=f.requires.filter(symbol=>!available.has(symbol));
   const coverage=(f.requires.length-missing.length)/Math.max(1,f.requires.length);
-  return{id:f.id,formula:f.formula,target:f.target,requires:f.requires,missing,matchScore:Number(((target?0.35:0.15)+coverage*0.65).toFixed(2))};
+  const requestedTarget=target??f.target;return{id:f.id,formula:f.formula,target:requestedTarget,requires:f.requires,missing,matchScore:Number(((target?0.35:0.15)+coverage*0.65).toFixed(2)),rearrangement:rearrangeFormula(f.formula,requestedTarget)};
  }).sort((a,b)=>b.matchScore-a.matchScore);
  return{originalQuestion:q,givens:[...new Set(givens)],find,conditions:[...new Set(conditions)],objects:[...new Set(objects)],variables,classification,formulaCandidates};
 }
