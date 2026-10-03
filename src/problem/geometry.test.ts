@@ -3,3 +3,10 @@ const cases:[string,number][]=[['A circle has radius 5 cm. Find the area.',78.53
 describe('geometry end-to-end',()=>{for(const[q,want]of cases)it(q,()=>{const a=analyzeGeometryQuestion(q),s=solveGeometry(a),d=geometryDiagram(a);expect(a.shape).toBeTruthy();expect(s.success).toBe(true);expect(s.value).toBeCloseTo(want,3);expect(d).toBeTruthy()})});
 describe('safe failure',()=>{it('does not guess unsupported data',()=>{const a=analyzeGeometryQuestion('A triangle has one side 5 cm. Find its area.');expect(solveGeometry(a).success).toBe(false)})});
 describe('geometry families',()=>{it('renders compound hexagram as two closed cycles',()=>expect(StarPolygon(6,2).primitives).toHaveLength(2));it('renders coprime pentagram as one cycle',()=>expect(StarPolygon(5,2).primitives).toHaveLength(1));it('generates reusable polygon and solid families',()=>{for(const m of[Polygon(12),Prism(7),Pyramid(8),Antiprism(5),Bipyramid(6)])expect(m.primitives.length).toBeGreaterThan(0)})});
+
+describe('expanded formula and safety coverage',()=>{
+ it('solves equilateral triangle area',()=>{const s=solveGeometry(analyzeGeometryQuestion('An equilateral triangle has side 8 cm. Find the area.'));expect(s.success).toBe(true);expect(s.value).toBeCloseTo(27.7128,3)});
+ it('solves cylinder lateral area',()=>{const s=solveGeometry(analyzeGeometryQuestion('A cylinder has radius 3 cm and height 7 cm. Find the lateral surface area.'));expect(s.success).toBe(true);expect(s.value).toBeCloseTo(131.9469,3)});
+ it('solves semicircle perimeter',()=>{const s=solveGeometry(analyzeGeometryQuestion('A semicircle has radius 5 cm. Find the perimeter.'));expect(s.success).toBe(true);expect(s.value).toBeCloseTo(25.708,3)});
+ it('rejects mixed units instead of silently combining them',()=>{const a=analyzeGeometryQuestion('A rectangle has length 2 m and width 30 cm. Find the area.');expect(a.warnings.some(w=>w.includes('Mixed measurement'))).toBe(true);expect(solveGeometry(a).success).toBe(false)});
+});
