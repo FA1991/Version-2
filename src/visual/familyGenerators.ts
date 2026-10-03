@@ -1,46 +1,13 @@
 import type{GeometryModel,GeometryPrimitiveSpec}from'./geometryEngine';
-
-type P=[number,number]; type P3=[number,number,number];
+type P=[number,number];type P3=[number,number,number];
 const line=(a:P,b:P,s='edge'):GeometryPrimitiveSpec=>({type:'line',attrs:{x1:a[0],y1:a[1],x2:b[0],y2:b[1]},semantic:s});
 const polygon=(pts:P[],s='face'):GeometryPrimitiveSpec=>({type:'polygon',attrs:{points:pts.map(p=>p.join(',')).join(' ')},semantic:s});
 const ring=(n:number,cx:number,cy:number,r:number,rot=-Math.PI/2):P[]=>Array.from({length:n},(_,i)=>[cx+r*Math.cos(rot+2*Math.PI*i/n),cy+r*Math.sin(rot+2*Math.PI*i/n)]);
-const anchors=(pts:P[],prefix='v')=>Object.fromEntries(pts.map((p,i)=>[`${prefix}${i}`,p])) as Record<string,P>;
-
-export function Polygon(n:number,opts:{regular?:boolean;concavity?:number;rotation?:number}={}):GeometryModel{
- n=Math.max(3,Math.floor(n));const pts=ring(n,50,50,31,opts.rotation);
- if(opts.regular===false)pts.forEach((p,i)=>{const k=.82+.18*((i*7)%5)/4;p[0]=50+(p[0]-50)*k;p[1]=50+(p[1]-50)*k});
- if((opts.concavity??0)>0&&n>=4){pts[1]=[50+(pts[1][0]-50)*.35,50+(pts[1][1]-50)*.35]}
- return{id:`polygon-${n}`,dimension:'2D',primitives:[polygon(pts)],anchors:{...anchors(pts),center:[50,50]}};
-}
-
-export function StarPolygon(n:number,k=2):GeometryModel{
- n=Math.max(5,Math.floor(n));k=Math.max(2,Math.min(Math.floor(k),Math.floor((n-1)/2)));
- const pts=ring(n,50,50,32),order:number[]=[];let i=0;const seen=new Set<number>();
- while(!seen.has(i)){seen.add(i);order.push(i);i=(i+k)%n}
- const path=order.map(j=>pts[j]);return{id:`star-${n}-${k}`,dimension:'2D',primitives:[{type:'polyline',attrs:{points:path.concat([path[0]]).map(p=>p.join(',')).join(' ')},semantic:'star-polygon'}],anchors:{...anchors(pts),center:[50,50]}};
-}
-
-function project([x,y,z]:P3):P{return[50+x*24+z*11,54-y*24-z*8]}
-function base3(n:number,z:number,r=.8):P3[]{return Array.from({length:n},(_,i)=>{const a=-Math.PI/2+i*2*Math.PI/n;return[r*Math.cos(a),r*Math.sin(a),z]})}
-function edgesBetween(a:P[],b:P[],semantic='lateral-edge'){return a.map((p,i)=>line(p,b[i],semantic))}
-
-export function Prism(n:number,opts:{oblique?:number}={}):GeometryModel{
- n=Math.max(3,Math.floor(n));const lo=base3(n,-.55),hi=base3(n,.55).map(([x,y,z])=>[x+(opts.oblique??0),y,z] as P3),a=lo.map(project),b=hi.map(project);
- return{id:`prism-${n}`,dimension:'2.5D',primitives:[polygon(a,'base'),polygon(b,'base'),...edgesBetween(a,b)],anchors:{...anchors(a,'lower'),...anchors(b,'upper'),center:[50,50]}};
-}
-
-export function Pyramid(n:number,opts:{oblique?:number}={}):GeometryModel{
- n=Math.max(3,Math.floor(n));const base=base3(n,0).map(project),apex=project([opts.oblique??0,0,1.65]);
- return{id:`pyramid-${n}`,dimension:'2.5D',primitives:[polygon(base,'base'),...base.map(p=>line(p,apex,'lateral-edge'))],anchors:{...anchors(base,'base'),apex,center:[50,50]}};
-}
-
-export function Antiprism(n:number):GeometryModel{
- n=Math.max(3,Math.floor(n));const lo=base3(n,-.5),hi=Array.from({length:n},(_,i)=>{const a=-Math.PI/2+(i+.5)*2*Math.PI/n;return[.8*Math.cos(a),.8*Math.sin(a),.5] as P3}),a=lo.map(project),b=hi.map(project);
- const sides:GeometryPrimitiveSpec[]=[];for(let i=0;i<n;i++){sides.push(line(a[i],b[i],'lateral-edge'),line(a[i],b[(i-1+n)%n],'lateral-edge'))}
- return{id:`antiprism-${n}`,dimension:'2.5D',primitives:[polygon(a,'base'),polygon(b,'base'),...sides],anchors:{...anchors(a,'lower'),...anchors(b,'upper'),center:[50,50]}};
-}
-
-export function Bipyramid(n:number):GeometryModel{
- n=Math.max(3,Math.floor(n));const base=base3(n,0).map(project),top=project([0,0,1.45]),bottom=project([0,0,-1.45]);
- return{id:`bipyramid-${n}`,dimension:'2.5D',primitives:[polygon(base,'equator'),...base.flatMap(p=>[line(p,top,'upper-edge'),line(p,bottom,'lower-edge')])],anchors:{...anchors(base,'equator'),top,bottom,center:[50,50]}};
-}
+const anchors=(pts:P[],prefix='v')=>Object.fromEntries(pts.map((p,i)=>[`${prefix}${i}`,p]))as Record<string,P>;
+export function Polygon(n:number,opts:{regular?:boolean;concavity?:number;rotation?:number}={}):GeometryModel{n=Math.max(3,Math.floor(n));const pts=ring(n,50,50,31,opts.rotation);if(opts.regular===false)pts.forEach((p,i)=>{const k=.82+.18*((i*7)%5)/4;p[0]=50+(p[0]-50)*k;p[1]=50+(p[1]-50)*k});if((opts.concavity??0)>0&&n>=4)pts[1]=[50+(pts[1][0]-50)*.35,50+(pts[1][1]-50)*.35];return{id:`polygon-${n}`,dimension:'2D',primitives:[polygon(pts)],anchors:{...anchors(pts),center:[50,50]}}}
+export function StarPolygon(n:number,k=2):GeometryModel{n=Math.max(5,Math.floor(n));k=Math.max(2,Math.min(Math.floor(k),Math.floor((n-1)/2)));const pts=ring(n,50,50,32),visited=new Set<number>(),primitives:GeometryPrimitiveSpec[]=[];for(let start=0;start<n;start++){if(visited.has(start))continue;const order:number[]=[];let i=start;while(!visited.has(i)){visited.add(i);order.push(i);i=(i+k)%n}if(order.length>1){const path=order.map(j=>pts[j]);primitives.push({type:'polyline',attrs:{points:path.concat([path[0]]).map(p=>p.join(',')).join(' ')},semantic:'star-polygon'})}}return{id:`star-${n}-${k}`,dimension:'2D',primitives,anchors:{...anchors(pts),center:[50,50]}}}
+function project([x,y,z]:P3):P{return[50+x*24+z*11,54-y*24-z*8]}function base3(n:number,z:number,r=.8):P3[]{return Array.from({length:n},(_,i)=>{const a=-Math.PI/2+i*2*Math.PI/n;return[r*Math.cos(a),r*Math.sin(a),z]})}function edgesBetween(a:P[],b:P[],semantic='lateral-edge'){return a.map((p,i)=>line(p,b[i],semantic))}
+export function Prism(n:number,opts:{oblique?:number}={}):GeometryModel{n=Math.max(3,Math.floor(n));const lo=base3(n,-.55),hi=base3(n,.55).map(([x,y,z])=>[x+(opts.oblique??0),y,z]as P3),a=lo.map(project),b=hi.map(project);return{id:`prism-${n}`,dimension:'2.5D',primitives:[polygon(a,'base'),polygon(b,'base'),...edgesBetween(a,b)],anchors:{...anchors(a,'lower'),...anchors(b,'upper'),center:[50,50]}}}
+export function Pyramid(n:number,opts:{oblique?:number}={}):GeometryModel{n=Math.max(3,Math.floor(n));const base=base3(n,0).map(project),apex=project([opts.oblique??0,0,1.65]);return{id:`pyramid-${n}`,dimension:'2.5D',primitives:[polygon(base,'base'),...base.map(p=>line(p,apex,'lateral-edge'))],anchors:{...anchors(base,'base'),apex,center:[50,50]}}}
+export function Antiprism(n:number):GeometryModel{n=Math.max(3,Math.floor(n));const lo=base3(n,-.5),hi=Array.from({length:n},(_,i)=>{const a=-Math.PI/2+(i+.5)*2*Math.PI/n;return[.8*Math.cos(a),.8*Math.sin(a),.5]as P3}),a=lo.map(project),b=hi.map(project);const sides:GeometryPrimitiveSpec[]=[];for(let i=0;i<n;i++)sides.push(line(a[i],b[i],'lateral-edge'),line(a[i],b[(i-1+n)%n],'lateral-edge'));return{id:`antiprism-${n}`,dimension:'2.5D',primitives:[polygon(a,'base'),polygon(b,'base'),...sides],anchors:{...anchors(a,'lower'),...anchors(b,'upper'),center:[50,50]}}}
+export function Bipyramid(n:number):GeometryModel{n=Math.max(3,Math.floor(n));const base=base3(n,0).map(project),top=project([0,0,1.45]),bottom=project([0,0,-1.45]);return{id:`bipyramid-${n}`,dimension:'2.5D',primitives:[polygon(base,'equator'),...base.flatMap(p=>[line(p,top,'upper-edge'),line(p,bottom,'lower-edge')])],anchors:{...anchors(base,'equator'),top,bottom,center:[50,50]}}
