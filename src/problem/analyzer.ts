@@ -1,5 +1,6 @@
 import{STEM_TAXONOMY}from'../knowledge/stemTaxonomy';
-export interface Classification{subject:string;topic:string;problemType:string;confidence:number;evidence:string[]}\nexport interface ProblemAnalysis{originalQuestion:string;givens:string[];find:string[];conditions:string[];objects:string[];classification:Classification}
+import{formulasFor}from'../knowledge/formulaLibrary';
+export interface Classification{subject:string;topic:string;problemType:string;confidence:number;evidence:string[]}\nexport interface FormulaCandidate{id:string;formula:string;target:string;requires:string[];missing:string[];matchScore:number}\nexport interface ProblemAnalysis{originalQuestion:string;givens:string[];find:string[];conditions:string[];objects:string[];classification:Classification;formulaCandidates:FormulaCandidate[]}
 
 const objectWords=['box','ball','car','block','person','stone','projectile','incline','ramp','circle','triangle','spring','pulley'];
 
@@ -24,5 +25,12 @@ export function analyzeQuestion(question:string):ProblemAnalysis{
  for(const word of objectWords)if(new RegExp('\\b'+word+'\\b','i').test(q))objects.push(word[0].toUpperCase()+word.slice(1));
  const findMatch=q.match(/(?:find|calculate|determine|what is)\s+(?:the\s+)?([^?.]+)/i);
  const find=findMatch?[findMatch[1].trim().replace(/\s+of\s+the.*$/i,'')]:[];
- return{originalQuestion:q,givens:[...new Set(givens)],find,conditions:[...new Set(conditions)],objects:[...new Set(objects)],classification:classify(q)};
+ const classification=classify(q);
+ const targetText=find.join(' ').toLowerCase();const targetAliases:Record<string,string>={
+  acceleration:'a',velocity:'v',speed:'v',displacement:'s',distance:'s',area:'A',circumference:'C',
+  momentum:'p','kinetic energy':'KE','potential energy':'PE',molarity:'M','ph':'pH'
+ };
+ const target=Object.entries(targetAliases).find(([name])=>targetText.includes(name))?.[1];
+ const formulaCandidates=formulasFor(classification.problemType,target).map(f=>({id:f.id,formula:f.formula,target:f.target,requires:f.requires,missing:[],matchScore:target?1:.7}));
+ return{originalQuestion:q,givens:[...new Set(givens)],find,conditions:[...new Set(conditions)],objects:[...new Set(objects)],classification,formulaCandidates};
 }
