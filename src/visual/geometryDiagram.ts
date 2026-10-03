@@ -4,8 +4,11 @@ import{buildGeometry}from'./geometryEngine';import{buildExtendedGeometry}from'./
 const text=(x:number,y:number,value:string):GeometryPrimitiveSpec=>({type:'text',attrs:{x,y,text:value},semantic:'measurement-label'});
 export function geometryDiagram(a:GeometryQuestionAnalysis):GeometryModel|null{
  let id=a.shape;if(!id)return null;let m:GeometryModel|null=null;
- const aliases:Record<string,string>={'right triangle':'triangle','equilateral triangle':'triangle','isosceles triangle':'triangle','semicircle':'semicircle','triangular prism':'triangular-prism'};
- id=aliases[id]??id;m=buildGeometry(id,a.givens as Record<string,number|string>)??buildExtendedGeometry(id,a.givens as Record<string,number|string>);
+ const aliases:Record<string,string>={'right triangle':'triangle','equilateral triangle':'triangle','isosceles triangle':'triangle','semicircle':'semicircle','triangular prism':'triangular-prism','rectangular prism':'rectangular-prism'};
+ id=aliases[id]??id;
+ const params:Record<string,number|string>={...a.givens};
+ if(a.givens.r!=null)params.radius=a.givens.r;if(a.givens.w!=null)params.width=a.givens.w;if(a.givens.h!=null)params.height=a.givens.h;
+ m=buildGeometry(id,params)??buildExtendedGeometry(id,params);
  if(!m&&id==='triangular-prism')m=Prism(3);if(!m&&id==='pyramid')m=Pyramid(4);if(!m&&/gon$/.test(id))m=Polygon(6);if(!m)return null;
  const u=Object.values(a.units).find(Boolean)??'',g=a.givens,labels:GeometryPrimitiveSpec[]=[];
  if(g.r!=null)labels.push(text(61,48,`r = ${g.r} ${u}`));if(g.d!=null)labels.push(text(48,47,`d = ${g.d} ${u}`));
