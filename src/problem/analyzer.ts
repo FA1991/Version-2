@@ -1,8 +1,15 @@
+import{STEM_TAXONOMY}from'../knowledge/stemTaxonomy';
 export interface Classification{subject:string;topic:string;problemType:string;confidence:number;evidence:string[]}\nexport interface ProblemAnalysis{originalQuestion:string;givens:string[];find:string[];conditions:string[];objects:string[];classification:Classification}
 
 const objectWords=['box','ball','car','block','person','stone','projectile','incline','ramp','circle','triangle','spring','pulley'];
 
-function classify(q:string):Classification{const s=q.toLowerCase();const rules=[['Physics','Forces & Motion','Inclined plane',['incline','ramp','friction']],['Physics','Kinematics','Projectile motion',['projectile','launched','thrown']],['Physics','Kinematics','Free fall',['free fall','dropped','falls']],['Math','Geometry','Triangle',['triangle']],['Math','Geometry','Circle',['circle','radius','diameter']],['Math','Algebra','Equation',['solve for','equation']],['Chemistry','General Chemistry','Chemistry problem',['mole','molar','reaction']],['Biology','Biology','Biology problem',['cell','dna','gene']]] as const;let best:any=null;for(const r of rules){const evidence=r[3].filter(t=>s.includes(t));if(!best||evidence.length>best.evidence.length)if(evidence.length)best={r,evidence};}return best?{subject:best.r[0],topic:best.r[1],problemType:best.r[2],confidence:Math.min(.95,.6+best.evidence.length*.1),evidence:best.evidence}:{subject:'Unknown',topic:'Unknown',problemType:'Unknown',confidence:0,evidence:[]};}\n\nexport function analyzeQuestion(question:string):ProblemAnalysis{
+function classify(q:string):Classification{
+ const s=q.toLowerCase();let best:any=null;
+ for(const rule of STEM_TAXONOMY){const primary=rule.terms.filter(t=>s.includes(t));const secondary=(rule.boost??[]).filter(t=>s.includes(t));const score=primary.length*3+secondary.length;if(score>0&&(!best||score>best.score))best={rule,score,evidence:[...primary,...secondary]};}
+ return best?{subject:best.rule.subject,topic:[best.rule.area,best.rule.topic,best.rule.subtopic].filter(Boolean).join(' → '),problemType:best.rule.problemType,confidence:Math.min(.98,.5+best.score*.06),evidence:best.evidence}:{subject:'Unknown',topic:'Unknown',problemType:'Unknown',confidence:0,evidence:[]};
+}
+
+export function analyzeQuestion(question:string):ProblemAnalysis{
  const q=question.trim();const givens:string[]=[];const conditions:string[]=[];const objects:string[]=[];
  const measurements=[...q.matchAll(/(-?\d+(?:\.\d+)?)\s*(kg|g|m\/s²|m\/s\^2|m\/s|m|cm|mm|km|N|J|W|Pa|s|°|degrees?)/gi)];
  for(const m of measurements){const value=m[1],unit=m[2];let label='Value';const before=q.slice(Math.max(0,(m.index??0)-45),m.index??0).toLowerCase();
