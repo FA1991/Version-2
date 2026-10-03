@@ -1,28 +1,12 @@
-import{useState}from'react';import{analyzeQuestion,ProblemAnalysis}from'./problem/analyzer';
-
-const sample='A 5 kg box is pushed up a 30° incline with a force of 80 N. Find the acceleration of the box. Assume no friction.';
-function Section({title,tone,children}:{title:string;tone:string;children:React.ReactNode}){return <section><h2 className={'marker '+tone}>{title}</h2>{children}</section>}
+import{useState,type ReactNode}from'react';import{analyzeGeometryQuestion,type GeometryQuestionAnalysis}from'./problem/geometryQuestionAnalyzer';import{solveGeometry,type GeometrySolveResult}from'./problem/geometrySolver';import{geometryDiagram}from'./visual/geometryDiagram';import{GeometrySvg}from'./visual/GeometrySvg';import type{GeometryModel}from'./visual/geometryEngine';
+const sample='A cylinder has radius 4 cm and height 10 cm. Find its volume.';
+function Section({title,tone,children}:{title:string;tone:string;children:ReactNode}){return <section><h2 className={'marker '+tone}>{title}</h2>{children}</section>}
 export default function App(){
- const[q,setQ]=useState(sample);const[result,setResult]=useState<ProblemAnalysis|null>(null);
- const run=()=>setResult(analyzeQuestion(q));
- return <div className="appShell">
-   <header className="questionComposer">
-    <div className="composerTop"><div><span className="eyebrow">STEM TUTOR</span><h1>What are you working on?</h1></div><span className="stepPill">Step 1 · Understand</span></div>
-    <div className="inputCard"><textarea value={q} onChange={e=>setQ(e.target.value)} placeholder="Type or paste your STEM question…"/><div className="inputFooter"><span>We’ll organize the question before solving it.</span><button className="analyze" onClick={run}>Analyze <span>→</span></button></div></div>
-   </header>
-   <main className="paper">
-    <div className="paperQuestion"><span className="marker yellow">Question:</span><p>{q||'Your question will appear here.'}</p></div>
-    <div className="work">
-     <div className="left">
-      <Section title="Given:" tone="blue">{result?<ul>{result.givens.map((x,i)=><li key={i}>{x}</li>)}</ul>:<p className="hint">Values from the question appear here.</p>}</Section>
-      <Section title="Find:" tone="green">{result?<ul>{result.find.map((x,i)=><li key={i}>{x}</li>)}</ul>:<p className="hint">What needs to be found appears here.</p>}</Section>
-     </div>
-     <div className="right">
-      <Section title="Conditions:" tone="purple">{result?<ul>{result.conditions.map((x,i)=><li key={i}>{x}</li>)}</ul>:<p className="hint">Important conditions appear here.</p>}</Section>
-      <Section title="Objects:" tone="orange">{result?<ul>{result.objects.map((x,i)=><li key={i}>{x}</li>)}</ul>:<p className="hint">Objects in the problem appear here.</p>}</Section>
-     </div>
-    </div>
-    <div className="status">{result&&<span>Question understood · ready for the next step</span>}</div>
-   </main>
- </div>
+ const[q,setQ]=useState(sample),[analysis,setAnalysis]=useState<GeometryQuestionAnalysis|null>(null),[solution,setSolution]=useState<GeometrySolveResult|null>(null),[diagram,setDiagram]=useState<GeometryModel|null>(null);
+ const run=()=>{const a=analyzeGeometryQuestion(q);setAnalysis(a);setSolution(solveGeometry(a));setDiagram(geometryDiagram(a))};
+ return <div className="appShell"><header className="questionComposer"><div className="composerTop"><div><span className="eyebrow">STEM TUTOR · GEOMETRY TEST</span><h1>What geometry problem are you working on?</h1></div><span className="stepPill">Solve + Draw</span></div><div className="inputCard"><textarea value={q} onChange={e=>setQ(e.target.value)} placeholder="Type a geometry question…"/><div className="inputFooter"><span>The deterministic geometry engine will analyze, solve and draw it.</span><button className="analyze" onClick={run}>Solve & Draw <span>→</span></button></div></div></header>
+ <main className="paper"><div className="paperQuestion"><span className="marker yellow">Question:</span><p>{q}</p></div>
+ <div className="geometryWork"><div className="geometryInfo"><Section title="Given:" tone="blue">{analysis?<ul>{Object.entries(analysis.givens).map(([k,v])=><li key={k}>{k} = {v} {analysis.units[k]??Object.values(analysis.units)[0]??''}</li>)}</ul>:<p className="hint">Measurements appear here.</p>}</Section><Section title="Find:" tone="green"><p className="handText">{analysis?.target??'Target appears here.'}</p></Section>{diagram&&<div className="diagramWrap"><GeometrySvg model={diagram}/></div>}</div>
+ <div className="solutionColumn"><Section title="Solution:" tone="blue">{solution?.success?<><p className="formula">{solution.formula}</p><ol>{solution.steps.map((s,i)=><li key={i}>{s}</li>)}</ol><div className="finalAnswer">{solution.exact&&<span>{solution.exact} ≈ </span>}{solution.value} {solution.unit}</div></>:analysis?<p className="warning">{solution?.message}{analysis.warnings.length?' '+analysis.warnings.join(' '):''}</p>:<p className="hint">Your steps and verified answer appear here.</p>}</Section></div></div>
+ <div className="status">{analysis&&<span>{solution?.success&&diagram?'Solved · diagram generated':'Needs another formula/parser rule before it can solve safely'}</span>}</div></main></div>
 }
