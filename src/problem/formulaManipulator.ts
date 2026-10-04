@@ -20,7 +20,7 @@ const templates:Record<string,Record<string,string>>={
  'V = l*w*h':{V:'V = l*w*h',l:'l = V/(w*h)',w:'w = V/(l*h)',h:'h = V/(l*w)'},
  'V = s^3':{V:'V = s^3',s:'s = cbrt(V)'},
  'V = (1/3)*pi*r^2*h':{V:'V = (1/3)*pi*r^2*h',r:'r = sqrt(3*V/(pi*h))',h:'h = 3*V/(pi*r^2)'},
- 'V = 4*pi*r^3/3':{V:'V = 4*pi*r^3/3',r:'r = cbrt(3*V/(4*pi))},
+ 'V = 4*pi*r^3/3':{V:'V = 4*pi*r^3/3',r:'r = cbrt(3*V/(4*pi))'},
  'SA = 4*pi*r^2':{SA:'SA = 4*pi*r^2',r:'r = sqrt(SA/(4*pi))'},
  'A = (1/2)*b*h':{A:'A = (1/2)*b*h',b:'b = 2*A/h',h:'h = 2*A/b'},
  'KE = (1/2)*m*v^2':{KE:'KE = (1/2)*m*v^2',m:'m = 2*KE/v^2',v:'v = sqrt(2*KE/m)'},
