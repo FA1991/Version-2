@@ -1,3 +1,4 @@
+import{GEOMETRY_FORMULAS}from'./geometryFormulaRegistry';
 export interface FormulaRule{
  id:string;subject:string;area:string;topic:string;problemTypes:string[];
  target:string;formula:string;requires:string[];optional?:string[];
@@ -11,6 +12,7 @@ export interface FormulaRule{
  * More curriculum formulas are added as records without changing the solver.
  */
 export const FORMULA_LIBRARY:FormulaRule[]=[
+ ...GEOMETRY_FORMULAS,
  {id:'math.geometry.rectangle.area',subject:'Mathematics',area:'Geometry',topic:'Plane Geometry',problemTypes:['Rectangle'],target:'A',formula:'A = l*w',requires:['l','w'],units:{l:'length',w:'length',A:'length^2'}},
  {id:'math.geometry.triangle.area',subject:'Mathematics',area:'Geometry',topic:'Plane Geometry',problemTypes:['Triangle measurement','Trig triangle'],target:'A',formula:'A = (1/2)*b*h',requires:['b','h'],units:{b:'length',h:'length',A:'length^2'}},
  {id:'math.geometry.circle.area',subject:'Mathematics',area:'Geometry',topic:'Plane Geometry',problemTypes:['Circle measurement'],target:'A',formula:'A = pi*r^2',requires:['r'],units:{r:'length',A:'length^2'}},
