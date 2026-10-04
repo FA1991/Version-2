@@ -63,3 +63,8 @@ describe('math input normalization and semantic circle annotation',()=>{
 describe('semantic measurement diagrams',()=>{
  it('draws a full diameter instead of a radius for a diameter-given circle',()=>{const a=analyzeGeometryQuestion('What is the area of a circle with a diameter of 16?');const m=geometryDiagram(a)!;expect(m.primitives.some(p=>p.semantic==='diameter')).toBe(true);expect(m.primitives.some(p=>p.type==='text'&&String(p.attrs.text).includes('d = 16'))).toBe(true);expect(m.primitives.some(p=>p.type==='text'&&p.attrs.text==='r')).toBe(false)});
 });
+
+describe('semantic triangle diagrams',()=>{
+ it('draws altitude and right-angle marker for base-height area questions',()=>{const a=analyzeGeometryQuestion('What is the area of a triangle with a base of 8 and a height of 5?');const m=geometryDiagram(a)!;expect(m.primitives.some(p=>p.semantic==='altitude')).toBe(true);expect(m.primitives.some(p=>p.semantic==='right-angle-marker')).toBe(true);expect(m.primitives.some(p=>p.type==='text'&&String(p.attrs.text).includes('b = 8'))).toBe(true);expect(m.primitives.some(p=>p.type==='text'&&String(p.attrs.text).includes('h = 5'))).toBe(true)});
+ it('shows the two known angles and unknown angle on missing-angle questions',()=>{const a=analyzeGeometryQuestion('Find the measure of the missing angle in a triangle if two of the angles measure 95° and 35°.');const m=geometryDiagram(a)!;for(const x of ['95°','35°','?'])expect(m.primitives.some(p=>p.type==='text'&&p.attrs.text===x)).toBe(true)});
+});
