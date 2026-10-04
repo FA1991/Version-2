@@ -17,11 +17,12 @@ const schema={
 };
 
 export default async function handler(req,res){
- res.setHeader('Access-Control-Allow-Origin',process.env.ALLOWED_ORIGIN||'*');
+ const allowed=process.env.ALLOWED_ORIGIN||'https://fa1991.github.io';const origin=String(req.headers?.origin||'');if(origin&&origin!==allowed)return res.status(403).json({error:'Origin not allowed'});res.setHeader('Access-Control-Allow-Origin',allowed);res.setHeader('Vary','Origin');
  res.setHeader('Access-Control-Allow-Headers','Content-Type');
  if(req.method==='OPTIONS')return res.status(204).end();
  if(req.method!=='POST')return res.status(405).json({error:'POST only'});
  const question=String(req.body?.question||'').trim();
+ if(!process.env.OPENAI_API_KEY)return res.status(503).json({error:'AI reader is not configured.'});
  if(!question||question.length>2000)return res.status(400).json({error:'A geometry question is required.'});
  try{
   const response=await client.responses.create({
