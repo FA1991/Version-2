@@ -1,17 +1,5 @@
-import type{GeometryQuestionAnalysis}from'../problem/geometryQuestionAnalyzer';
-import type{GeometryModel,GeometryPrimitiveSpec}from'./geometryEngine';
-import{buildGeometry}from'./geometryEngine';import{buildExtendedGeometry}from'./geometryExtended';import{Polygon,Prism,Pyramid}from'./familyGenerators';
+import type{GeometryQuestionAnalysis}from'../problem/geometryQuestionAnalyzer';import type{GeometryModel,GeometryPrimitiveSpec}from'./geometryEngine';import{buildGeometry}from'./geometryEngine';import{buildExtendedGeometry}from'./geometryExtended';import{Polygon,Prism,Pyramid}from'./familyGenerators';
 const text=(x:number,y:number,value:string):GeometryPrimitiveSpec=>({type:'text',attrs:{x,y,text:value},semantic:'measurement-label'});
-export function geometryDiagram(a:GeometryQuestionAnalysis):GeometryModel|null{
- let id=a.shape;if(!id)return null;let m:GeometryModel|null=null;
- const aliases:Record<string,string>={'right triangle':'triangle','equilateral triangle':'triangle','isosceles triangle':'triangle','semicircle':'semicircle','triangular prism':'triangular-prism','rectangular prism':'rectangular-prism'};
- id=aliases[id]??id;
- const params:Record<string,number|string>={...a.givens};
- if(a.givens.r!=null)params.radius=a.givens.r;if(a.givens.w!=null)params.width=a.givens.w;if(a.givens.h!=null)params.height=a.givens.h;
- m=buildGeometry(id,params)??buildExtendedGeometry(id,params);
- if(!m&&id==='triangular-prism')m=Prism(3);if(!m&&id==='pyramid')m=Pyramid(4);if(!m&&/gon$/.test(id))m=Polygon(6);if(!m)return null;
- const u=Object.values(a.units).find(Boolean)??'',g=a.givens,labels:GeometryPrimitiveSpec[]=[];
- if(g.r!=null)labels.push(text(61,48,`r = ${g.r} ${u}`));if(g.d!=null)labels.push(text(48,47,`d = ${g.d} ${u}`));
- if(g.l!=null)labels.push(text(43,88,`l = ${g.l} ${u}`));if(g.w!=null)labels.push(text(80,56,`w = ${g.w} ${u}`));if(g.h!=null)labels.push(text(82,48,`h = ${g.h} ${u}`));if(g.b!=null)labels.push(text(45,87,`b = ${g.b} ${u}`));if(g.s!=null)labels.push(text(42,88,`s = ${g.s} ${u}`));
- labels.push(text(8,10,`Find: ${a.target??'?'}`));return{...m,primitives:[...m.primitives,...labels]};
-}
+const fmt=(v:number,u:string)=>`${Number(v.toFixed(4))}${u?' '+u:''}`;
+export function geometryDiagram(a:GeometryQuestionAnalysis):GeometryModel|null{let id=a.shape;if(!id)return null;let m:GeometryModel|null=null;const aliases:Record<string,string>={'right triangle':'triangle','equilateral triangle':'triangle','isosceles triangle':'triangle','semicircle':'semicircle','triangular prism':'triangular-prism','rectangular prism':'rectangular-prism'};id=aliases[id]??id;const params:Record<string,number|string>={...a.givens};if(a.givens.r!=null)params.radius=Math.min(30,Math.max(12,a.givens.r*3));if(a.givens.w!=null)params.width=Math.min(62,Math.max(28,a.givens.w*6));if(a.givens.h!=null)params.height=Math.min(52,Math.max(24,a.givens.h*5));m=buildGeometry(id,params)??buildExtendedGeometry(id,params);if(!m&&id==='triangular-prism')m=Prism(3);if(!m&&id==='pyramid')m=Pyramid(4);if(!m&&/gon$/.test(id))m=Polygon(6);if(!m)return null;
+ const g=a.givens,labels:GeometryPrimitiveSpec[]=[],u=(k:string)=>a.units[k]??Object.values(a.units).find(Boolean)??'';if(g.r!=null)labels.push(text(61,48,`r = ${fmt(g.r,u('r'))}`));if(g.d!=null)labels.push(text(48,47,`d = ${fmt(g.d,u('d'))}`));if(g.l!=null)labels.push(text(43,88,`l = ${fmt(g.l,u('l'))}`));if(g.w!=null)labels.push(text(80,56,`w = ${fmt(g.w,u('w'))}`));if(g.h!=null)labels.push(text(82,48,`h = ${fmt(g.h,u('h'))}`));if(g.b!=null)labels.push(text(45,87,`b = ${fmt(g.b,u('b'))}`));if(g.s!=null)labels.push(text(42,88,`s = ${fmt(g.s,u('s'))}`));if(g.sl!=null)labels.push(text(72,42,`ℓ = ${fmt(g.sl,u('sl'))}`));if(g.d1!=null)labels.push(text(26,45,`d₁ = ${fmt(g.d1,u('d1'))}`));if(g.d2!=null)labels.push(text(55,72,`d₂ = ${fmt(g.d2,u('d2'))}`));if(g.a!=null)labels.push(text(22,64,`a = ${fmt(g.a,u('a'))}`));if(g.c!=null)labels.push(text(66,50,`c = ${fmt(g.c,u('c'))}`));labels.push(text(8,10,`Find: ${a.target??'?'}`));return{...m,primitives:[...m.primitives,...labels]};}
