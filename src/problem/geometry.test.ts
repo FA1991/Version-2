@@ -2,6 +2,8 @@ import{describe,it,expect}from'vitest';
 import{solveGeometry}from'./geometrySolver';
 import{verifyGeometry}from'./geometryVerifier';
 import{normalizeGeometryUnits}from'./geometryUnitNormalizer';
+import{toSolutionJSON}from'./solutionJSON';
+import{toDiagramJSON}from'../visual/diagramJSON';
 import{geometryDiagram}from'../visual/geometryDiagram';
 import type{GeometryQuestionAnalysis}from'./geometryQuestionAnalyzer';
 
@@ -20,5 +22,6 @@ describe('geometry engine contract',()=>{
  it('normalizes mixed dimensions without corrupting area or volume units',()=>{const rect=normalizeGeometryUnits(problem('rectangle','area',{l:1,w:50},{l:'m',w:'cm'})).analysis;expect(rect.givens.w).toBe(0.5);expect(solveGeometry(rect).value).toBe(0.5);const inv=normalizeGeometryUnits(problem('rectangle','length',{A:5000,w:50},{A:'cm²',w:'cm'})).analysis;expect(solveGeometry(inv).value).toBe(100);const cyl=normalizeGeometryUnits(problem('cylinder','height',{V:1000000,r:10},{V:'cm³',r:'cm'})).analysis;expect(verifyGeometry(cyl,solveGeometry(cyl)).valid).toBe(true)});
  it('completes prism dimensions and cube surface inverse paths',()=>{const cases=[problem('rectangular prism','length',{V:120,w:4,h:6},{V:'cm³',w:'cm',h:'cm'}),problem('rectangular prism','width',{V:120,l:5,h:6},{V:'cm³',l:'cm',h:'cm'}),problem('rectangular prism','height',{V:120,l:5,w:4},{V:'cm³',l:'cm',w:'cm'}),problem('cube','side',{SA:150},{SA:'cm²'})];for(const a of cases){const s=solveGeometry(a);expect(s.success).toBe(true);expect(verifyGeometry(a,s).valid).toBe(true);expect(s.steps.join(' ')).toMatch(/isolate/)}});
  it('solves inverse quadrilateral measurements structurally',()=>{const cases=[problem('rhombus','diagonal',{A:60,d1:10},{A:'cm²',d1:'cm'}),problem('kite','diagonal',{A:48,d2:8},{A:'cm²',d2:'cm'}),problem('trapezoid','height',{A:60,a:8,b:12},{A:'cm²',a:'cm',b:'cm'})];for(const a of cases){const s=solveGeometry(a);expect(s.success).toBe(true);expect(verifyGeometry(a,s).valid).toBe(true);expect(s.steps.join(' ')).toMatch(/isolate/)}});
+ it('keeps Solution and Diagram JSON semantic boundaries clean',()=>{const a=problem('rhombus','diagonal',{A:60,d1:10,__pi:Math.PI},{A:'cm²',d1:'cm'}),s=solveGeometry(a),v=verifyGeometry(a,s),solution=toSolutionJSON(a.target,s,v),diagram=toDiagramJSON(a);expect(solution?.find.symbol).toBe('d2');expect(solution?.verified).toBe(true);expect(diagram?.labels.__pi).toBeUndefined();expect(diagram?.highlight).toBe('diagonal')});
  it('does not invent missing measurements',()=>{const a=problem('triangle','area',{s:5},{s:'cm'});expect(solveGeometry(a).success).toBe(false)});
 });
