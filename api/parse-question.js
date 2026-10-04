@@ -16,7 +16,7 @@ const schema={
 };
 
 export default async function handler(req,res){
- const allowed=process.env.ALLOWED_ORIGIN||'https://fa1991.github.io';const origin=String(req.headers?.origin||'');if(origin&&origin!==allowed)return res.status(403).json({error:'Origin not allowed'});res.setHeader('Access-Control-Allow-Origin',allowed);res.setHeader('Vary','Origin');
+ const configured=process.env.ALLOWED_ORIGIN?.trim();const origin=String(req.headers?.origin||'');const sameHost=origin&&req.headers?.host&&new URL(origin).host===req.headers.host;const allowed=configured||origin;if(origin&&!sameHost&&configured&&origin!==configured)return res.status(403).json({error:'Origin not allowed'});if(allowed)res.setHeader('Access-Control-Allow-Origin',allowed);res.setHeader('Vary','Origin');
  res.setHeader('Access-Control-Allow-Headers','Content-Type');
  if(req.method==='OPTIONS')return res.status(204).end();
  if(req.method!=='POST')return res.status(405).json({error:'POST only'});
