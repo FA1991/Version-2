@@ -14,7 +14,12 @@ const templates:Record<string,Record<string,string>>={
  'M = n/V':{M:'M = n/V',n:'n = M*V',V:'V = n/M'},
  'n = m/M':{n:'n = m/M',m:'m = n*M',M:'M = m/n'},
  'A = l*w':{A:'A = l*w',l:'l = A/w',w:'w = A/l'},
+ 'A = pi*r^2':{A:'A = pi*r^2',r:'r = sqrt(A/pi)'},
  'C = 2*pi*r':{C:'C = 2*pi*r',r:'r = C/(2*pi)'},
+ 'V = pi*r^2*h':{V:'V = pi*r^2*h',r:'r = sqrt(V/(pi*h))',h:'h = V/(pi*r^2)'},
+ 'V = l*w*h':{V:'V = l*w*h',l:'l = V/(w*h)',w:'w = V/(l*h)',h:'h = V/(l*w)'},
+ 'V = s^3':{V:'V = s^3',s:'s = cbrt(V)'},
+ 'A = (1/2)*b*h':{A:'A = (1/2)*b*h',b:'b = 2*A/h',h:'h = 2*A/b'},
  'KE = (1/2)*m*v^2':{KE:'KE = (1/2)*m*v^2',m:'m = 2*KE/v^2',v:'v = sqrt(2*KE/m)'},
  'PE = m*g*h':{PE:'PE = m*g*h',m:'m = PE/(g*h)',g:'g = PE/(m*h)',h:'h = PE/(m*g)'},
  'P*V = n*R*T':{P:'P = n*R*T/V',V:'V = n*R*T/P',n:'n = P*V/(R*T)',T:'T = P*V/(n*R)'}
