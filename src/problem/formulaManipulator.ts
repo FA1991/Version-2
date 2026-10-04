@@ -16,6 +16,8 @@ const templates:Record<string,Record<string,string>>={
  'A = l*w':{A:'A = l*w',l:'l = A/w',w:'w = A/l'},
  'A = s^2':{A:'A = s^2',s:'s = sqrt(A)'},
  'A = b*h':{A:'A = b*h',b:'b = A/h',h:'h = A/b'},
+ 'A = (1/2)*d1*d2':{A:'A = (1/2)*d1*d2',d1:'d1 = 2*A/d2',d2:'d2 = 2*A/d1'},
+ 'A = (1/2)*(a+b)*h':{A:'A = (1/2)*(a+b)*h',h:'h = 2*A/(a+b)'},
  'V = (1/3)*B*h':{V:'V = (1/3)*B*h',B:'B = 3*V/h',h:'h = 3*V/B'},
  'A = pi*r^2':{A:'A = pi*r^2',r:'r = sqrt(A/pi)'},
  'C = 2*pi*r':{C:'C = 2*pi*r',r:'r = C/(2*pi)'},
