@@ -12,7 +12,6 @@ function bounds(p:GeometryPrimitiveSpec):Box|null{const a=p.attrs;
 const labelBox=(x:number,y:number,s:string):Box=>({x,y:y-4,w:Math.max(7,s.length*2.15),h:5});
 export function layoutGeometryLabels(model:GeometryModel):GeometryModel{const shapes=model.primitives.filter(p=>p.type!=='text').map(bounds).filter(Boolean) as Box[],placed:Box[]=[];
  const primitives=model.primitives.map(p=>{if(p.type!=='text')return p;const value=String(p.attrs.text??''),ox=Number(p.attrs.x??50),oy=Number(p.attrs.y??50);
-  const candidates:[[number,number],string][]=[[[ox,oy]],''].map(()=>[[ox,oy],'']) as any;
   const pos:[number,number][]=[[ox,oy],[ox+5,oy-7],[ox+5,oy+8],[ox-12,oy-7],[ox-12,oy+8],[8,14+placed.length*7],[70,14+placed.length*7]];
   let chosen=pos[0],best=Infinity;
   for(const q of pos){const x=clamp(q[0],3,94),y=clamp(q[1],7,96),b=labelBox(x,y,value),shapeHits=shapes.filter(s=>overlap(b,s,.5)).length,labelHits=placed.filter(s=>overlap(b,s,1)).length,score=shapeHits*20+labelHits*100+Math.hypot(x-ox,y-oy)*.05;if(score<best){best=score;chosen=[x,y]}}
