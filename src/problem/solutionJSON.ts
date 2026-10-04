@@ -12,11 +12,11 @@ export interface GeometrySolutionJSON{
  answer:{symbol:string;value:number;unit:string|null};
  verified:boolean;
 }
-const meaning:Record<string,string>={A:'area',P:'perimeter',C:'circumference',V:'volume',r:'radius',d:'diameter',d1:'diagonal 1',d2:'diagonal 2',SA:'surface area',LA:'lateral area',L:'arc length',c:'hypotenuse',a:'leg',h:'height',b:'base',l:'length',w:'width',s:'side length'};
+const meaning:Record<string,string>={A:'area',P:'perimeter',C:'circumference',V:'volume',r:'radius',d:'diameter',d1:'diagonal 1',d2:'diagonal 2',SA:'surface area',LA:'lateral area',L:'arc length',c:'hypotenuse',a:'leg',h:'height',b:'base',l:'length',w:'width',s:'side length',B:'base area'};
 const symbolFor:Record<string,string>={area:'A',perimeter:'P',circumference:'C',volume:'V',radius:'r',diameter:'d','surface-area':'SA','lateral-area':'LA','arc-length':'L','sector-area':'A',hypotenuse:'c',leg:'a',height:'h',base:'b',length:'l',width:'w',side:'s'};
-export function toSolutionJSON(target:string|null,s:GeometrySolveResult,v:GeometryVerification):GeometrySolutionJSON|null{
+export function toSolutionJSON(target:string|null,s:GeometrySolveResult,v:GeometryVerification,shape:string|null=null):GeometrySolutionJSON|null{
  if(!s.success||!s.formula||s.value==null)return null;
- let symbol=symbolFor[target??'']??target??'?';if(target==='diagonal'){const hasD1=s.symbols?.some(x=>x.startsWith('d1 = ')),hasD2=s.symbols?.some(x=>x.startsWith('d2 = '));symbol=hasD1&&!hasD2?'d2':hasD2&&!hasD1?'d1':'d'}
+ let symbol=(shape==='pyramid'&&target==='base')?'B':symbolFor[target??'']??target??'?';if(target==='diagonal'){const hasD1=s.symbols?.some(x=>x.startsWith('d1 = ')),hasD2=s.symbols?.some(x=>x.startsWith('d2 = '));symbol=hasD1&&!hasD2?'d2':hasD2&&!hasD1?'d1':'d'}
  const manipulation=s.steps.filter(x=>/full formula|isolate/i.test(x));
  const substitution=s.steps.find(x=>x.startsWith('Substitute:'))?.replace(/^Substitute:\s*/,'').replace(/\.$/,'')??null;
  const symbols:Record<string,string>={};for(const row of s.symbols??[]){const i=row.indexOf(' = ');if(i>0)symbols[row.slice(0,i)]=row.slice(i+3)}
