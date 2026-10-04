@@ -10,3 +10,9 @@ describe('expanded formula and safety coverage',()=>{
  it('solves semicircle perimeter',()=>{const s=solveGeometry(analyzeGeometryQuestion('A semicircle has radius 5 cm. Find the perimeter.'));expect(s.success).toBe(true);expect(s.value).toBeCloseTo(25.708,3)});
  it('rejects mixed units instead of silently combining them',()=>{const a=analyzeGeometryQuestion('A rectangle has length 2 m and width 30 cm. Find the area.');expect(a.warnings.some(w=>w.includes('Mixed measurement'))).toBe(true);expect(solveGeometry(a).success).toBe(false)});
 });
+
+describe('quadrilateral and prism coverage',()=>{
+ it('solves rhombus area from diagonals',()=>{const a=analyzeGeometryQuestion('A rhombus has diagonals 10 cm and 6 cm. Find the area.');const s=solveGeometry(a);expect(s.success).toBe(true);expect(s.value).toBe(30);expect(geometryDiagram(a)).toBeTruthy()});
+ it('solves kite area from diagonals',()=>{const a=analyzeGeometryQuestion('A kite has diagonals 12 m and 7 m. Find the area.');const s=solveGeometry(a);expect(s.success).toBe(true);expect(s.value).toBe(42);expect(geometryDiagram(a)).toBeTruthy()});
+ it('solves triangular prism volume',()=>{const a=analyzeGeometryQuestion('A triangular prism has base 8 cm, height 5 cm, and length 12 cm. Find the volume.');const s=solveGeometry(a);expect(s.success).toBe(true);expect(s.value).toBe(240);expect(geometryDiagram(a)).toBeTruthy()});
+});
