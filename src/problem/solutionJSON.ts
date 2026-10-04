@@ -16,7 +16,7 @@ const meaning:Record<string,string>={A:'area',P:'perimeter',C:'circumference',V:
 const symbolFor:Record<string,string>={area:'A',perimeter:'P',circumference:'C',volume:'V',radius:'r',diameter:'d','surface-area':'SA','lateral-area':'LA','arc-length':'L','sector-area':'A',hypotenuse:'c',leg:'a',height:'h',base:'b',length:'l',width:'w',side:'s'};
 export function toSolutionJSON(target:string|null,s:GeometrySolveResult,v:GeometryVerification):GeometrySolutionJSON|null{
  if(!s.success||!s.formula||s.value==null)return null;
- const symbol=symbolFor[target??'']??target??'?';
+ let symbol=symbolFor[target??'']??target??'?';if(target==='diagonal'){const hasD1=s.symbols?.some(x=>x.startsWith('d1 = ')),hasD2=s.symbols?.some(x=>x.startsWith('d2 = '));symbol=hasD1&&!hasD2?'d2':hasD2&&!hasD1?'d1':'d'}
  const manipulation=s.steps.filter(x=>/full formula|isolate/i.test(x));
  const substitution=s.steps.find(x=>x.startsWith('Substitute:'))?.replace(/^Substitute:\s*/,'').replace(/\.$/,'')??null;
  const symbols:Record<string,string>={};for(const row of s.symbols??[]){const i=row.indexOf(' = ');if(i>0)symbols[row.slice(0,i)]=row.slice(i+3)}
