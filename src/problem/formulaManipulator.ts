@@ -20,6 +20,8 @@ const templates:Record<string,Record<string,string>>={
  'A = (1/2)*(a+b)*h':{A:'A = (1/2)*(a+b)*h',h:'h = 2*A/(a+b)'},
  'V = (1/3)*B*h':{V:'V = (1/3)*B*h',B:'B = 3*V/h',h:'h = 3*V/B'},
  'A = pi*r^2':{A:'A = pi*r^2',r:'r = sqrt(A/pi)'},
+ 'A = (1/2)*pi*r^2':{A:'A = (1/2)*pi*r^2',r:'r = sqrt(2*A/pi)'},
+ 'LA = 2*pi*r*h':{LA:'LA = 2*pi*r*h',r:'r = LA/(2*pi*h)',h:'h = LA/(2*pi*r)'},
  'C = 2*pi*r':{C:'C = 2*pi*r',r:'r = C/(2*pi)'},
  'V = pi*r^2*h':{V:'V = pi*r^2*h',r:'r = sqrt(V/(pi*h))',h:'h = V/(pi*r^2)'},
  'V = l*w*h':{V:'V = l*w*h',l:'l = V/(w*h)',w:'w = V/(l*h)',h:'h = V/(l*w)'},
