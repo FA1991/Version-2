@@ -2,10 +2,10 @@ import type{GeometryPrimitiveSpec}from'./geometryEngine';
 const L=(x1:number,y1:number,x2:number,y2:number,s:string):GeometryPrimitiveSpec=>({type:'line',attrs:{x1,y1,x2,y2},semantic:s});
 const P=(points:string,s:string):GeometryPrimitiveSpec=>({type:'polygon',attrs:{points},semantic:s});
 
-export function solidNet(id:string):GeometryPrimitiveSpec[]{
+export function solidNet(id:string,opts:{width?:number;height?:number;depth?:number;radius?:number}={}):GeometryPrimitiveSpec[]{
  if(id==='cube')return[P('35,35 50,35 50,50 35,50','net-face'),P('20,50 35,50 35,65 20,65','net-face'),P('35,50 50,50 50,65 35,65','net-face'),P('50,50 65,50 65,65 50,65','net-face'),P('65,50 80,50 80,65 65,65','net-face'),P('35,65 50,65 50,80 35,80','net-face')];
- if(id==='rectangular-prism')return[P('34,32 58,32 58,45 34,45','net-face'),P('20,45 34,45 34,68 20,68','net-face'),P('34,45 58,45 58,68 34,68','net-face'),P('58,45 72,45 72,68 58,68','net-face'),P('72,45 96,45 96,68 72,68','net-face'),P('34,68 58,68 58,81 34,81','net-face')];
- if(id==='cylinder')return[{type:'ellipse',attrs:{cx:24,cy:50,rx:12,ry:12},semantic:'net-base'},P('36,32 76,32 76,68 36,68','net-lateral'),{type:'ellipse',attrs:{cx:88,cy:50,rx:12,ry:12},semantic:'net-base'}];
+ if(id==='rectangular-prism'){const w=Math.max(12,Math.min(28,opts.width??24)),h=Math.max(12,Math.min(28,opts.height??23)),d=Math.max(8,Math.min(18,opts.depth??14)),x=34,y=45;return[P(`${x},${y-h} ${x+w},${y-h} ${x+w},${y} ${x},${y}`,'net-face'),P(`${x-d},${y} ${x},${y} ${x},${y+h} ${x-d},${y+h}`,'net-face'),P(`${x},${y} ${x+w},${y} ${x+w},${y+h} ${x},${y+h}`,'net-face'),P(`${x+w},${y} ${x+w+d},${y} ${x+w+d},${y+h} ${x+w},${y+h}`,'net-face'),P(`${x+w+d},${y} ${x+2*w+d},${y} ${x+2*w+d},${y+h} ${x+w+d},${y+h}`,'net-face'),P(`${x},${y+h} ${x+w},${y+h} ${x+w},${y+h+d} ${x},${y+h+d}`,'net-face')]};
+ if(id==='cylinder'){const r=Math.max(6,Math.min(14,opts.radius??12)),h=Math.max(20,Math.min(42,opts.height??36)),w=Math.min(48,2*Math.PI*r);return[{type:'circle',attrs:{cx:16,cy:50,r},semantic:'net-base'},P(`${28},${50-h/2} ${28+w},${50-h/2} ${28+w},${50+h/2} ${28},${50+h/2}`,'net-lateral'),{type:'circle',attrs:{cx:Math.min(91,32+w+r),cy:50,r},semantic:'net-base'}]};
  if(id==='cone')return[{type:'path',attrs:{d:'M 50 50 L 82 50 A 32 32 0 0 1 32 76 Z'},semantic:'net-sector'},{type:'circle',attrs:{cx:22,cy:28,r:11},semantic:'net-base'}];
  return[];
 }
