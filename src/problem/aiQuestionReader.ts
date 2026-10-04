@@ -1,6 +1,6 @@
 import type{GeometryQuestionAnalysis}from'./geometryQuestionAnalyzer';
 export interface AIReaderResult{analysis:{subject:'geometry';shape:string|null;givens:Record<string,number>;units:Record<string,string>;target:string|null;constraints:string[];keywords:string[];confidence:number};reader:'ai'}
-const endpoint=(import.meta.env.VITE_AI_PARSER_URL||'').trim();
+const endpoint=(import.meta.env.VITE_AI_PARSER_URL||((import.meta.env.PROD&&location.hostname.endsWith('vercel.app'))?'/api/parse-question':'')).trim();
 const keys=new Set(['r','d','b','h','l','w','s','a','c','sl','d1','d2','ap','P','B','theta','angle1','angle2','n']);
 const targets=new Set(['area','perimeter','circumference','volume','arc-length','sector-area','missing-angle','shortest-side','surface-area','lateral-area','interior-angle-sum','interior-angle','exterior-angle','radius','diameter','diagonal','leg','hypotenuse']);
 function valid(x:any):x is AIReaderResult{if(!x||x.reader!=='ai'||x.analysis?.subject!=='geometry'||typeof x.analysis.confidence!=='number'||x.analysis.confidence<0||x.analysis.confidence>1||!Array.isArray(x.analysis.constraints)||!Array.isArray(x.analysis.keywords)||!x.analysis.givens||!x.analysis.units)return false;if(x.analysis.target!=null&&!targets.has(x.analysis.target))return false;for(const[k,v]of Object.entries(x.analysis.givens)){if(!keys.has(k)||typeof v!=='number'||!Number.isFinite(v))return false}return true}
