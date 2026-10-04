@@ -87,3 +87,5 @@ describe('rectilinear diagram semantics',()=>{
  it('draws a stepped outline and all six outside side measurements',()=>{const a=analyzeGeometryQuestion('A rectilinear figure has outside side lengths of 12, 9, 3, 6, 9, and 3 units. What is its total perimeter?');expect(Object.keys(a.givens).filter(k=>/^side\d+$/.test(k))).toHaveLength(6);const m=geometryDiagram(a)!;expect(m).not.toBeNull();expect(m.primitives.some(p=>p.semantic==='rectilinear-outline')).toBe(true);expect(m.primitives.filter(p=>p.type==='text'&&p.semantic?.includes('side')).length).toBeGreaterThanOrEqual(6)});
 });
 
+
+describe('explicit target priority',()=>{it('reads a rectangle area request as area, never perimeter',()=>{const a=analyzeGeometryQuestion('What is the area of a rectangle with a length of 12 meters and a width of 5 meters?');expect(a.shape).toBe('rectangle');expect(a.target).toBe('area');expect(a.givens.l).toBe(12);expect(a.givens.w).toBe(5);const s=solveGeometry(a);expect(s.value).toBe(60);expect(verifyGeometry(a,s).valid).toBe(true)})});
