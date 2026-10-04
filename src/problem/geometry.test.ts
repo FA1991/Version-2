@@ -82,3 +82,7 @@ describe('semantic label anchoring',()=>{
 describe('special triangle diagram semantics',()=>{
  it('shows 30-60-90 angle values, hypotenuse and unknown short side',()=>{const a=analyzeGeometryQuestion('In a 30-60-90 triangle, the length of the hypotenuse is 6. What is the length of the shortest side?');const m=geometryDiagram(a)!;for(const value of ['30°','60°','90°','c = 6','?'])expect(m.primitives.some(p=>p.type==='text'&&String(p.attrs.text).includes(value))).toBe(true)});
 });
+
+describe('rectilinear diagram semantics',()=>{
+ it('draws a stepped outline and all six outside side measurements',()=>{const a=analyzeGeometryQuestion('A rectilinear figure has outside side lengths of 12, 9, 3, 6, 9, and 3 units. What is its total perimeter?');const m=geometryDiagram(a)!;expect(m.primitives.some(p=>p.semantic==='rectilinear-outline')).toBe(true);expect(m.primitives.filter(p=>p.type==='text'&&p.semantic?.includes('side')).length).toBeGreaterThanOrEqual(6)});
+});
