@@ -1,0 +1,5 @@
+{
+  "functions": {
+    "api/parse-question.js": { "maxDuration": 10 }
+  }
+}
