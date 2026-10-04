@@ -12,8 +12,8 @@ export interface GeometrySolutionJSON{
  answer:{symbol:string;value:number;unit:string|null};
  verified:boolean;
 }
-const meaning:Record<string,string>={A:'area',P:'perimeter',C:'circumference',V:'volume',r:'radius',d:'diameter',SA:'surface area',LA:'lateral area',L:'arc length',c:'hypotenuse',a:'leg'};
-const symbolFor:Record<string,string>={area:'A',perimeter:'P',circumference:'C',volume:'V',radius:'r',diameter:'d','surface-area':'SA','lateral-area':'LA','arc-length':'L','sector-area':'A',hypotenuse:'c',leg:'a'};
+const meaning:Record<string,string>={A:'area',P:'perimeter',C:'circumference',V:'volume',r:'radius',d:'diameter',SA:'surface area',LA:'lateral area',L:'arc length',c:'hypotenuse',a:'leg',h:'height',b:'base',l:'length',w:'width',s:'side length'};
+const symbolFor:Record<string,string>={area:'A',perimeter:'P',circumference:'C',volume:'V',radius:'r',diameter:'d','surface-area':'SA','lateral-area':'LA','arc-length':'L','sector-area':'A',hypotenuse:'c',leg:'a',height:'h',base:'b',length:'l',width:'w',side:'s'};
 export function toSolutionJSON(target:string|null,s:GeometrySolveResult,v:GeometryVerification):GeometrySolutionJSON|null{
  if(!s.success||!s.formula||s.value==null)return null;
  const symbol=symbolFor[target??'']??target??'?';
