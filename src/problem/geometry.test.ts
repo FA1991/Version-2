@@ -89,3 +89,5 @@ describe('rectilinear diagram semantics',()=>{
 
 
 describe('explicit target priority',()=>{it('reads a rectangle area request as area, never perimeter',()=>{const a=analyzeGeometryQuestion('What is the area of a rectangle with a length of 12 meters and a width of 5 meters?');expect(a.shape).toBe('rectangle');expect(a.target).toBe('area');expect(a.givens.l).toBe(12);expect(a.givens.w).toBe(5);const s=solveGeometry(a);expect(s.value).toBe(60);expect(verifyGeometry(a,s).valid).toBe(true)})});
+
+describe('live box wording regression',()=>{it('treats a box as a rectangular prism and solves its volume',()=>{const a=analyzeGeometryQuestion('What is the volume of a box with a length of 5m, a width of 3m, and a height of 2m?');expect(a.shape).toBe('rectangular prism');expect(a.target).toBe('volume');expect(a.givens.l).toBe(5);expect(a.givens.w).toBe(3);expect(a.givens.h).toBe(2);const s=solveGeometry(a);expect(s.value).toBe(30);expect(verifyGeometry(a,s).valid).toBe(true);expect(geometryDiagram(a)).not.toBeNull()})});
