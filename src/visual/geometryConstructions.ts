@@ -1,35 +1,7 @@
-import type{GeometryModel,GeometryPrimitiveSpec}from'./geometryEngine';
-const L=(a:[number,number],b:[number,number],s:string):GeometryPrimitiveSpec=>({type:'line',attrs:{x1:a[0],y1:a[1],x2:b[0],y2:b[1]},semantic:s});
-const T=(p:[number,number],value:string,s='label'):GeometryPrimitiveSpec=>({type:'text',attrs:{x:p[0],y:p[1],text:value},semantic:s});
-export type ConstructionKind='median'|'altitude'|'angle-bisector'|'perpendicular-bisector'|'incircle'|'circumcircle'|'centroid'|'orthocenter'|'incenter'|'circumcenter';
-
-export function triangleConstructions(model:GeometryModel,kinds:ConstructionKind[]):GeometryPrimitiveSpec[]{
- const A=model.anchors.A,B=model.anchors.B,C=model.anchors.C;if(!A||!B||!C)return[];
- const mid=(a:[number,number],b:[number,number]):[number,number]=>[(a[0]+b[0])/2,(a[1]+b[1])/2];
- const centroid:[number,number]=[(A[0]+B[0]+C[0])/3,(A[1]+B[1]+C[1])/3],out:GeometryPrimitiveSpec[]=[];
- if(kinds.includes('median'))out.push(L(A,mid(B,C),'median'),L(B,mid(A,C),'median'),L(C,mid(A,B),'median'));
- if(kinds.includes('altitude'))out.push(L(C,[C[0],A[1]],'altitude'));
- if(kinds.includes('angle-bisector'))out.push(L(C,mid(A,B),'angle-bisector'));
- if(kinds.includes('perpendicular-bisector')){const m=mid(A,B);out.push(L([m[0],m[1]-28],[m[0],m[1]+8],'perpendicular-bisector'))}
- if(kinds.includes('centroid'))out.push({type:'point',attrs:{cx:centroid[0],cy:centroid[1]},semantic:'centroid'},T([centroid[0]+2,centroid[1]-2],'G','center-label'));
- if(kinds.includes('incircle'))out.push({type:'circle',attrs:{cx:centroid[0],cy:centroid[1]+5,r:15},semantic:'incircle'});
- if(kinds.includes('circumcircle'))out.push({type:'circle',attrs:{cx:50,cy:51,r:36},semantic:'circumcircle'});
- return out;
-}
-
-export function circleRelations(cx=50,cy=50,r=28):GeometryPrimitiveSpec[]{
- return[
-  L([cx,cy],[cx+r,cy],'radius'),L([cx-r,cy],[cx+r,cy],'diameter'),
-  L([cx-r*.75,cy-18],[cx+r*.75,cy-18],'chord'),
-  L([cx-r-10,cy+13],[cx+r+10,cy-9],'secant'),
-  L([cx+r,cy-30],[cx+r,cy+30],'tangent'),
-  T([cx+r+2,cy-2],'T','tangent-point')
- ];
-}
-
-export function relationMarks(kind:'parallel'|'perpendicular'|'equal-side'|'equal-angle',at:[number,number]):GeometryPrimitiveSpec[]{
- if(kind==='parallel')return[T(at,'≫','parallel-mark')];
- if(kind==='perpendicular')return[{type:'path',attrs:{d:`M ${at[0]} ${at[1]} l 5 0 l 0 -5`},semantic:'right-angle-mark'}];
- if(kind==='equal-side')return[L([at[0]-2,at[1]-3],[at[0]+2,at[1]+3],'equal-side-mark')];
- return[{type:'path',attrs:{d:`M ${at[0]-5} ${at[1]} A 6 6 0 0 1 ${at[0]+5} ${at[1]}`},semantic:'equal-angle-mark'}];
-}
+import type{GeometryModel,GeometryPrimitiveSpec}from'./geometryEngine';const L=(a:[number,number],b:[number,number],s:string):GeometryPrimitiveSpec=>({type:'line',attrs:{x1:a[0],y1:a[1],x2:b[0],y2:b[1]},semantic:s});const T=(p:[number,number],value:string,s='label'):GeometryPrimitiveSpec=>({type:'text',attrs:{x:p[0],y:p[1],text:value},semantic:s});type P=[number,number];export type ConstructionKind='median'|'altitude'|'angle-bisector'|'perpendicular-bisector'|'incircle'|'circumcircle'|'centroid'|'orthocenter'|'incenter'|'circumcenter';
+const dist=(a:P,b:P)=>Math.hypot(a[0]-b[0],a[1]-b[1]);const foot=(p:P,a:P,b:P):P=>{const dx=b[0]-a[0],dy=b[1]-a[1],t=((p[0]-a[0])*dx+(p[1]-a[1])*dy)/(dx*dx+dy*dy);return[a[0]+t*dx,a[1]+t*dy]};const circum=(A:P,B:P,C:P):P|null=>{const d=2*(A[0]*(B[1]-C[1])+B[0]*(C[1]-A[1])+C[0]*(A[1]-B[1]));if(Math.abs(d)<1e-8)return null;const aa=A[0]**2+A[1]**2,bb=B[0]**2+B[1]**2,cc=C[0]**2+C[1]**2;return[(aa*(B[1]-C[1])+bb*(C[1]-A[1])+cc*(A[1]-B[1]))/d,(aa*(C[0]-B[0])+bb*(A[0]-C[0])+cc*(B[0]-A[0]))/d]};
+export function triangleConstructions(model:GeometryModel,kinds:ConstructionKind[]):GeometryPrimitiveSpec[]{const A=model.anchors.A,B=model.anchors.B,C=model.anchors.C;if(!A||!B||!C)return[];const mid=(a:P,b:P):P=>[(a[0]+b[0])/2,(a[1]+b[1])/2],G:P=[(A[0]+B[0]+C[0])/3,(A[1]+B[1]+C[1])/3],sa=dist(B,C),sb=dist(A,C),sc=dist(A,B),sum=sa+sb+sc,I:P=[(sa*A[0]+sb*B[0]+sc*C[0])/sum,(sa*A[1]+sb*B[1]+sc*C[1])/sum],O=circum(A,B,C),H: P=O?[A[0]+B[0]+C[0]-2*O[0],A[1]+B[1]+C[1]-2*O[1]]:G,out:GeometryPrimitiveSpec[]=[];
+ if(kinds.includes('median'))out.push(L(A,mid(B,C),'median'),L(B,mid(A,C),'median'),L(C,mid(A,B),'median'));if(kinds.includes('altitude'))out.push(L(A,foot(A,B,C),'altitude'),L(B,foot(B,A,C),'altitude'),L(C,foot(C,A,B),'altitude'));if(kinds.includes('angle-bisector'))out.push(L(A,[(sb*B[0]+sc*C[0])/(sb+sc),(sb*B[1]+sc*C[1])/(sb+sc)],'angle-bisector'));if(kinds.includes('perpendicular-bisector')){const m=mid(A,B),dx=B[0]-A[0],dy=B[1]-A[1],n=Math.hypot(dx,dy),v:P=[-dy/n*28,dx/n*28];out.push(L([m[0]-v[0],m[1]-v[1]],[m[0]+v[0],m[1]+v[1]],'perpendicular-bisector'))}
+ const point=(p:P,label:string,semantic:string)=>out.push({type:'point',attrs:{cx:p[0],cy:p[1]},semantic},T([p[0]+2,p[1]-2],label,'center-label'));if(kinds.includes('centroid'))point(G,'G','centroid');if(kinds.includes('incenter'))point(I,'I','incenter');if(kinds.includes('orthocenter'))point(H,'H','orthocenter');if(kinds.includes('circumcenter')&&O)point(O,'O','circumcenter');if(kinds.includes('incircle'))out.push({type:'circle',attrs:{cx:I[0],cy:I[1],r:dist(I,foot(I,A,B))},semantic:'incircle'});if(kinds.includes('circumcircle')&&O)out.push({type:'circle',attrs:{cx:O[0],cy:O[1],r:dist(O,A)},semantic:'circumcircle'});return out}
+export function circleRelations(cx=50,cy=50,r=28):GeometryPrimitiveSpec[]{return[L([cx,cy],[cx+r,cy],'radius'),L([cx-r,cy],[cx+r,cy],'diameter'),L([cx-r*.75,cy-18],[cx+r*.75,cy-18],'chord'),L([cx-r-10,cy+13],[cx+r+10,cy-9],'secant'),L([cx+r,cy-30],[cx+r,cy+30],'tangent'),T([cx+r+2,cy-2],'T','tangent-point')]}
+export function relationMarks(kind:'parallel'|'perpendicular'|'equal-side'|'equal-angle',at:P):GeometryPrimitiveSpec[]{if(kind==='parallel')return[T(at,'≫','parallel-mark')];if(kind==='perpendicular')return[{type:'path',attrs:{d:`M ${at[0]} ${at[1]} l 5 0 l 0 -5`},semantic:'right-angle-mark'}];if(kind==='equal-side')return[L([at[0]-2,at[1]-3],[at[0]+2,at[1]+3],'equal-side-mark')];return[{type:'path',attrs:{d:`M ${at[0]-5} ${at[1]} A 6 6 0 0 1 ${at[0]+5} ${at[1]}`},semantic:'equal-angle-mark'}]}
