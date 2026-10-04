@@ -1,6 +1,7 @@
 import{describe,it,expect}from'vitest';
 import{solveGeometry}from'./geometrySolver';
 import{verifyGeometry}from'./geometryVerifier';
+import{normalizeGeometryUnits}from'./geometryUnitNormalizer';
 import{geometryDiagram}from'../visual/geometryDiagram';
 import type{GeometryQuestionAnalysis}from'./geometryQuestionAnalyzer';
 
@@ -16,5 +17,6 @@ describe('geometry engine contract',()=>{
  it('verifies expanded inverse 2D and pyramid families',()=>{const cases=[problem('rectangle','length',{A:48,w:6},{A:'cm²',w:'cm'}),problem('rectangle','width',{A:48,l:8},{A:'cm²',l:'cm'}),problem('square','side',{A:81},{A:'cm²'}),problem('parallelogram','base',{A:70,h:7},{A:'cm²',h:'cm'}),problem('parallelogram','height',{A:70,b:10},{A:'cm²',b:'cm'}),problem('pyramid','height',{V:100,B:25},{V:'cm³',B:'cm²'})];for(const a of cases){const s=solveGeometry(a);expect(s.success).toBe(true);expect(verifyGeometry(a,s).valid).toBe(true)}});
  it('handles inverse cylinder targets before forward-only cylinder branches',()=>{for(const a of [problem('cylinder','radius',{V:500,h:10},{V:'cm³',h:'cm'}),problem('cylinder','height',{V:500,r:4},{V:'cm³',r:'cm'})]){const s=solveGeometry(a);expect(s.success).toBe(true);expect(verifyGeometry(a,s).valid).toBe(true);expect(s.steps.join(' ')).toMatch(/isolate/)}});
  it('uses SA as the canonical sphere surface-area input',()=>{const a=problem('sphere','radius',{SA:314.1593},{SA:'cm²'}),s=solveGeometry(a);expect(s.success).toBe(true);expect(s.formula).toBe('SA = 4πr²');expect(verifyGeometry(a,s).valid).toBe(true)});
+ it('normalizes mixed dimensions without corrupting area or volume units',()=>{const rect=normalizeGeometryUnits(problem('rectangle','area',{l:1,w:50},{l:'m',w:'cm'})).analysis;expect(rect.givens.w).toBe(0.5);expect(solveGeometry(rect).value).toBe(0.5);const inv=normalizeGeometryUnits(problem('rectangle','length',{A:5000,w:50},{A:'cm²',w:'cm'})).analysis;expect(solveGeometry(inv).value).toBe(100);const cyl=normalizeGeometryUnits(problem('cylinder','height',{V:1000000,r:10},{V:'cm³',r:'cm'})).analysis;expect(verifyGeometry(cyl,solveGeometry(cyl)).valid).toBe(true)});
  it('does not invent missing measurements',()=>{const a=problem('triangle','area',{s:5},{s:'cm'});expect(solveGeometry(a).success).toBe(false)});
 });
