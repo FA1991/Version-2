@@ -15,7 +15,8 @@
     "typescript": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "roughjs": "latest"
+    "roughjs": "latest",
+    "openai": "latest"
   },
   "devDependencies": {
     "vitest": "latest"
