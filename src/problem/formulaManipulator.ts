@@ -20,7 +20,7 @@ const templates:Record<string,Record<string,string>>={
  'A = s^2':{A:'A = s^2',s:'s = sqrt(A)'},
  'A = b*h':{A:'A = b*h',b:'b = A/h',h:'h = A/b'},
  'A = (1/2)*d1*d2':{A:'A = (1/2)*d1*d2',d1:'d1 = 2*A/d2',d2:'d2 = 2*A/d1'},
- 'A = (1/2)*(a+b)*h':{A:'A = (1/2)*(a+b)*h',h:'h = 2*A/(a+b)'},
+ 'A = (1/2)*(a+b)*h':{A:'A = (1/2)*(a+b)*h',h:'h = 2*A/(a+b)',a:'a = 2*A/h-b',b:'b = 2*A/h-a'},
  'V = (1/3)*B*h':{V:'V = (1/3)*B*h',B:'B = 3*V/h',h:'h = 3*V/B'},
  'A = pi*r^2':{A:'A = pi*r^2',r:'r = sqrt(A/pi)'},
  'A = (1/2)*pi*r^2':{A:'A = (1/2)*pi*r^2',r:'r = sqrt(2*A/pi)'},
