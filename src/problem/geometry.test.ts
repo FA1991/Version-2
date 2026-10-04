@@ -78,3 +78,7 @@ describe('semantic label anchoring',()=>{
  it('keeps circle angle text semantic and removes floating target text',()=>{const a=analyzeGeometryQuestion('In a circle with radius 9 cm, find the arc length intercepted by a central angle of 60 degrees.');const m=geometryDiagram(a)!;const angle=m.primitives.find(p=>p.type==='text'&&String(p.attrs.text)==='60°');expect(angle?.semantic).toContain('angle');expect(m.primitives.some(p=>p.type==='text'&&String(p.attrs.text).includes('Find:'))).toBe(false)});
  it('tags triangle base and altitude labels by their geometric role',()=>{const a=analyzeGeometryQuestion('What is the area of a triangle with a base of 8 and a height of 5?');const m=geometryDiagram(a)!;expect(m.primitives.some(p=>p.type==='text'&&String(p.attrs.text).includes('b = 8')&&p.semantic?.includes('base'))).toBe(true);expect(m.primitives.some(p=>p.type==='text'&&String(p.attrs.text).includes('h = 5')&&p.semantic?.includes('height'))).toBe(true);expect(m.primitives.some(p=>p.semantic==='altitude')).toBe(true);expect(m.primitives.some(p=>p.semantic==='right-angle-marker')).toBe(true)});
 });
+
+describe('special triangle diagram semantics',()=>{
+ it('shows 30-60-90 angle values, hypotenuse and unknown short side',()=>{const a=analyzeGeometryQuestion('In a 30-60-90 triangle, the length of the hypotenuse is 6. What is the length of the shortest side?');const m=geometryDiagram(a)!;for(const value of ['30°','60°','90°','c = 6','?'])expect(m.primitives.some(p=>p.type==='text'&&String(p.attrs.text).includes(value))).toBe(true)});
+});
