@@ -10,6 +10,6 @@ export interface DiagramJSON{
 }
 export function toDiagramJSON(a:GeometryQuestionAnalysis):DiagramJSON|null{
  const model=geometryDiagram(a);if(!model||!a.shape)return null;
- const labels:Record<string,string>={};for(const[k,v]of Object.entries(a.givens)){const unit=a.units[k]??'';labels[k]=`${v}${unit?' '+unit:''}`}
+ const labels:Record<string,string>={};for(const[k,v]of Object.entries(a.givens)){if(k==='__pi'||k==='n')continue;const unit=a.units[k]??'';labels[k]=`${v}${unit?' '+unit:''}`}
  return{shape:a.shape,highlight:a.target,labels,model};
 }
