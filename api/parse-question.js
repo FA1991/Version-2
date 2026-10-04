@@ -6,14 +6,13 @@ const schema={
  properties:{
   subject:{type:'string',enum:['geometry']},
   shape:{type:['string','null']},
-  givens:{type:'object',additionalProperties:{type:'number'}},
-  units:{type:'object',additionalProperties:{type:'string'}},
+  givens:{type:'array',items:{type:'object',additionalProperties:false,properties:{symbol:{type:'string'},value:{type:'number'},unit:{type:'string'}},required:['symbol','value','unit']}},
   target:{type:['string','null']},
   constraints:{type:'array',items:{type:'string'}},
   keywords:{type:'array',items:{type:'string'}},
   confidence:{type:'number',minimum:0,maximum:1}
  },
- required:['subject','shape','givens','units','target','constraints','keywords','confidence']
+ required:['subject','shape','givens','target','constraints','keywords','confidence']
 };
 
 export default async function handler(req,res){
@@ -31,7 +30,7 @@ export default async function handler(req,res){
    input:question,
    text:{format:{type:'json_schema',name:'geometry_question',strict:true,schema}}
   });
-  const parsed=JSON.parse(response.output_text);
+  const parsed=JSON.parse(response.output_text);const givens={},units={};for(const item of parsed.givens){givens[item.symbol]=item.value;if(item.unit)units[item.symbol]=item.unit}parsed.givens=givens;parsed.units=units;
   return res.status(200).json({analysis:parsed,reader:'ai'});
  }catch(error){
   console.error(error);
