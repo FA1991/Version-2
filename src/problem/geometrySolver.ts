@@ -8,11 +8,13 @@ export function solveGeometry(a:GeometryQuestionAnalysis):GeometrySolveResult{
  else if(s==='semicircle'&&t==='area'&&g.r!=null){f='A = ½πr²';v=.5*Math.PI*g.r*g.r;p=2}else if(s==='semicircle'&&t==='perimeter'&&g.r!=null){f='P = πr + 2r';v=Math.PI*g.r+2*g.r}
  else if(s==='rectangle'&&t==='area'&&g.l!=null&&g.w!=null){f='A = lw';v=g.l*g.w;p=2}else if(s==='rectangle'&&t==='perimeter'&&g.l!=null&&g.w!=null){f='P = 2(l+w)';v=2*(g.l+g.w)}
  else if(s==='square'&&t==='area'&&g.s!=null){f='A = s²';v=g.s**2;p=2}else if(s==='square'&&t==='perimeter'&&g.s!=null){f='P = 4s';v=4*g.s}
- else if(s==='parallelogram'&&t==='area'&&g.b!=null&&g.h!=null){f='A = bh';v=g.b*g.h;p=2}else if(s==='rhombus'&&t==='perimeter'&&g.s!=null){f='P = 4s';v=4*g.s}
+ else if(s==='parallelogram'&&t==='area'&&g.b!=null&&g.h!=null){f='A = bh';v=g.b*g.h;p=2}
+ else if((s==='rhombus'||s==='kite')&&t==='area'&&g.d1!=null&&g.d2!=null){f='A = ½d₁d₂';v=.5*g.d1*g.d2;p=2}else if(s==='rhombus'&&t==='perimeter'&&g.s!=null){f='P = 4s';v=4*g.s}
  else if(s==='trapezoid'&&t==='area'&&g.a!=null&&g.b!=null&&g.h!=null){f='A = ½(a+b)h';v=.5*(g.a+g.b)*g.h;p=2}
  else if(s?.includes('triangle')&&t==='area'&&g.b!=null&&g.h!=null){f='A = ½bh';v=.5*g.b*g.h;p=2}else if(s==='equilateral triangle'&&t==='area'&&g.s!=null){f='A = (√3/4)s²';v=Math.sqrt(3)*g.s**2/4;p=2}else if(s==='equilateral triangle'&&t==='perimeter'&&g.s!=null){f='P = 3s';v=3*g.s}else if(s==='right triangle'&&t==='hypotenuse'&&g.a!=null&&g.b!=null){f='c = √(a²+b²)';v=Math.hypot(g.a,g.b)}
  else if(s==='cube'&&t==='volume'&&g.s!=null){f='V = s³';v=g.s**3;p=3}else if(s==='cube'&&t==='surface-area'&&g.s!=null){f='SA = 6s²';v=6*g.s**2;p=2}
  else if(s==='rectangular prism'&&t==='volume'&&g.l!=null&&g.w!=null&&g.h!=null){f='V = lwh';v=g.l*g.w*g.h;p=3}else if(s==='rectangular prism'&&t==='surface-area'&&g.l!=null&&g.w!=null&&g.h!=null){f='SA = 2(lw+lh+wh)';v=2*(g.l*g.w+g.l*g.h+g.w*g.h);p=2}
+ else if(s==='triangular prism'&&t==='volume'&&g.b!=null&&g.h!=null&&g.l!=null){f='V = (½bh)L';v=.5*g.b*g.h*g.l;p=3}
  else if(s==='cylinder'&&t==='volume'&&g.r!=null&&g.h!=null){f='V = πr²h';v=Math.PI*g.r**2*g.h;p=3}else if(s==='cylinder'&&t==='surface-area'&&g.r!=null&&g.h!=null){f='SA = 2πr(r+h)';v=2*Math.PI*g.r*(g.r+g.h);p=2}else if(s==='cylinder'&&t==='lateral-area'&&g.r!=null&&g.h!=null){f='LA = 2πrh';v=2*Math.PI*g.r*g.h;p=2}
  else if(s==='cone'&&t==='volume'&&g.r!=null&&g.h!=null){f='V = ⅓πr²h';v=Math.PI*g.r**2*g.h/3;p=3}else if(s==='cone'&&t==='surface-area'&&g.r!=null&&(g.sl!=null||g.h!=null)){const sl=g.sl??Math.hypot(g.r,g.h);f='SA = πr(r+ℓ)';v=Math.PI*g.r*(g.r+sl);p=2}else if(s==='cone'&&t==='lateral-area'&&g.r!=null&&(g.sl!=null||g.h!=null)){const sl=g.sl??Math.hypot(g.r,g.h);f='LA = πrℓ';v=Math.PI*g.r*sl;p=2}
  else if(s==='sphere'&&t==='volume'&&g.r!=null){f='V = 4πr³/3';v=4*Math.PI*g.r**3/3;p=3}else if(s==='sphere'&&t==='surface-area'&&g.r!=null){f='SA = 4πr²';v=4*Math.PI*g.r**2;p=2}
