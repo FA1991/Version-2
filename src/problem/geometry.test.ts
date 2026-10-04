@@ -84,5 +84,5 @@ describe('special triangle diagram semantics',()=>{
 });
 
 describe('rectilinear diagram semantics',()=>{
- it('draws a stepped outline and all six outside side measurements',()=>{const a=analyzeGeometryQuestion('A rectilinear figure has outside side lengths of 12, 9, 3, 6, 9, and 3 units. What is its total perimeter?');const m=geometryDiagram(a)!;expect(m.primitives.some(p=>p.semantic==='rectilinear-outline')).toBe(true);expect(Object.keys(a.givens).filter(k=>/^side\\d+$/.test(k))).toHaveLength(6);expect(m.primitives.filter(p=>p.type==='text'&&p.semantic?.includes('side')).length).toBeGreaterThanOrEqual(6)});
+ it('draws a stepped outline and all six outside side measurements',()=>{const a=analyzeGeometryQuestion('A rectilinear figure has outside side lengths of 12, 9, 3, 6, 9, and 3 units. What is its total perimeter?');expect(Object.keys(a.givens).filter(k=>/^side\\d+$/.test(k))).toHaveLength(6);const m=geometryDiagram(a)!;expect(m).not.toBeNull();expect(m.primitives.some(p=>p.semantic==='rectilinear-outline')).toBe(true);expect(m.primitives.filter(p=>p.type==='text'&&p.semantic?.includes('side')).length).toBeGreaterThanOrEqual(6)});
 });
