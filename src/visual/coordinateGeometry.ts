@@ -1,13 +1,9 @@
 import type{GeometryModel,GeometryPrimitiveSpec}from'./geometryEngine';
 export interface Transform2D{translateX?:number;translateY?:number;rotateDeg?:number;scaleX?:number;scaleY?:number;reflectX?:boolean;reflectY?:boolean}
 export interface CoordinateScene{model:GeometryModel;axes:GeometryPrimitiveSpec[];transformLabel?:string}
-
-export function coordinateAxes(min=-10,max=10):GeometryPrimitiveSpec[]{
- const out:GeometryPrimitiveSpec[]=[{type:'line',attrs:{x1:10,y1:50,x2:90,y2:50},semantic:'x-axis'},{type:'line',attrs:{x1:50,y1:90,x2:50,y2:10},semantic:'y-axis'}];
- for(let i=min;i<=max;i+=2){const x=50+(i/(max-min))*80*2;out.push({type:'line',attrs:{x1:x,y1:48.5,x2:x,y2:51.5},semantic:'tick'});}
- return out;
-}
-export function transformationDescription(t:Transform2D){
- const a:string[]=[];if(t.translateX||t.translateY)a.push(`translate (${t.translateX??0}, ${t.translateY??0})`);if(t.rotateDeg)a.push(`rotate ${t.rotateDeg}°`);if(t.scaleX!==undefined||t.scaleY!==undefined)a.push(`scale (${t.scaleX??1}, ${t.scaleY??1})`);if(t.reflectX)a.push('reflect across x-axis');if(t.reflectY)a.push('reflect across y-axis');return a.join(' → ')||'identity';
-}
+const L=(x1:number,y1:number,x2:number,y2:number,s:string):GeometryPrimitiveSpec=>({type:'line',attrs:{x1,y1,x2,y2},semantic:s});
+export function coordinateAxes(min=-10,max=10,step=2):GeometryPrimitiveSpec[]{const out:GeometryPrimitiveSpec[]=[L(10,50,90,50,'x-axis'),L(50,90,50,10,'y-axis')],span=max-min;for(let i=Math.ceil(min/step)*step;i<=max;i+=step){const x=10+(i-min)/span*80,y=90-(i-min)/span*80;out.push(L(x,48.5,x,51.5,'x-tick'),L(48.5,y,51.5,y,'y-tick'));if(i!==0){out.push({type:'text',attrs:{x:x-2,y:55,text:String(i)},semantic:'tick-label'},{type:'text',attrs:{x:53,y:y+2,text:String(i)},semantic:'tick-label'})}}return out}
+export function transformPoint([x,y]:[number,number],t:Transform2D):[number,number]{let X=x,Y=y;if(t.reflectX)Y=-Y;if(t.reflectY)X=-X;X*=t.scaleX??1;Y*=t.scaleY??1;const r=(t.rotateDeg??0)*Math.PI/180,nx=X*Math.cos(r)-Y*Math.sin(r),ny=X*Math.sin(r)+Y*Math.cos(r);return[nx+(t.translateX??0),ny+(t.translateY??0)]}
+export function distance(a:[number,number],b:[number,number]){return Math.hypot(b[0]-a[0],b[1]-a[1])}export function midpoint(a:[number,number],b:[number,number]):[number,number]{return[(a[0]+b[0])/2,(a[1]+b[1])/2]}export function slope(a:[number,number],b:[number,number]){return b[0]===a[0]?null:(b[1]-a[1])/(b[0]-a[0])}
+export function transformationDescription(t:Transform2D){const a:string[]=[];if(t.translateX||t.translateY)a.push(`translate (${t.translateX??0}, ${t.translateY??0})`);if(t.rotateDeg)a.push(`rotate ${t.rotateDeg}°`);if(t.scaleX!==undefined||t.scaleY!==undefined)a.push(`scale (${t.scaleX??1}, ${t.scaleY??1})`);if(t.reflectX)a.push('reflect across x-axis');if(t.reflectY)a.push('reflect across y-axis');return a.join(' → ')||'identity'}
 export function withCoordinatePlane(model:GeometryModel,t?:Transform2D):CoordinateScene{return{model,axes:coordinateAxes(),transformLabel:t?transformationDescription(t):undefined}}
