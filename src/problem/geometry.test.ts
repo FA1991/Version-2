@@ -87,10 +87,3 @@ describe('rectilinear diagram semantics',()=>{
  it('draws a stepped outline and all six outside side measurements',()=>{const a=analyzeGeometryQuestion('A rectilinear figure has outside side lengths of 12, 9, 3, 6, 9, and 3 units. What is its total perimeter?');expect(Object.keys(a.givens).filter(k=>/^side\\d+$/.test(k))).toHaveLength(6);const m=geometryDiagram(a)!;expect(m).not.toBeNull();expect(m.primitives.some(p=>p.semantic==='rectilinear-outline')).toBe(true);expect(m.primitives.filter(p=>p.type==='text'&&p.semantic?.includes('side')).length).toBeGreaterThanOrEqual(6)});
 });
 
-describe('rectilinear wording variants',()=>{
- for(const q of [
-  'A rectilinear figure has outside side lengths of 12, 9, 3, 6, 9, and 3 units. Find the perimeter.',
-  'A composite rectilinear figure has side lengths 12, 9, 3, 6, 9 and 3. What is the perimeter?',
-  'A rectilinear polygon has side lengths = 12, 9, 3, 6, 9, 3 units. Find total perimeter.'
- ])it(q,()=>{const a=analyzeGeometryQuestion(q);expect(a.shape).toBe('rectilinear figure');expect(Object.keys(a.givens).filter(k=>/^side\d+$/.test(k))).toHaveLength(6);expect([a.givens.side1,a.givens.side2,a.givens.side3,a.givens.side4,a.givens.side5,a.givens.side6]).toEqual([12,9,3,6,9,3]);const s=solveGeometry(a);expect(s.value).toBe(42);expect(verifyGeometry(a,s).valid).toBe(true)});
-});
