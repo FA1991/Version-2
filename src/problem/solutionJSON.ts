@@ -2,7 +2,7 @@ import type{GeometrySolveResult}from'./geometrySolver';
 import type{GeometryVerification}from'./geometryVerifier';
 
 export interface GeometrySolutionJSON{
- formula:{original:string;name:string};
+ formula:{id:string;original:string;name:string};
  symbols:Record<string,string>;
  find:{symbol:string;meaning:string};
  manipulation:string[];
@@ -20,5 +20,5 @@ export function toSolutionJSON(target:string|null,s:GeometrySolveResult,v:Geomet
  const manipulation=s.steps.filter(x=>/full formula|isolate/i.test(x));
  const substitution=s.steps.find(x=>x.startsWith('Substitute:'))?.replace(/^Substitute:\s*/,'').replace(/\.$/,'')??null;
  const symbols:Record<string,string>={};for(const row of s.symbols??[]){const i=row.indexOf(' = ');if(i>0)symbols[row.slice(0,i)]=row.slice(i+3)}
- return{formula:{original:s.formula,name:`${meaning[symbol]??target??'geometry'} formula`},symbols,find:{symbol,meaning:meaning[symbol]??target??'unknown'},manipulation,substitution,steps:s.steps,exact:s.exact??null,answer:{symbol,value:s.value,unit:s.unit},verified:v.valid};
+ return{formula:{id:s.ruleId??'geometry.unknown',original:s.formula,name:`${meaning[symbol]??target??'geometry'} formula`},symbols,find:{symbol,meaning:meaning[symbol]??target??'unknown'},manipulation,substitution,steps:s.steps,exact:s.exact??null,answer:{symbol,value:s.value,unit:s.unit},verified:v.valid};
 }
