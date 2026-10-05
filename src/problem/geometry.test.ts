@@ -5,7 +5,7 @@ import{normalizeGeometryUnits}from'./geometryUnitNormalizer';
 import{toSolutionJSON}from'./solutionJSON';
 import{toDiagramJSON}from'../visual/diagramJSON';
 import{geometryDiagram}from'../visual/geometryDiagram';
-import type{GeometryQuestionAnalysis}from'./geometryQuestionAnalyzer';
+import{analyzeGeometryQuestion,type GeometryQuestionAnalysis}from'./geometryQuestionAnalyzer';
 
 const problem=(shape:string,target:string,givens:Record<string,number>,units:Record<string,string>={}):GeometryQuestionAnalysis=>({subject:'geometry',shape,givens,units,target,warnings:[],regularPolygon:false,polygonN:null,raw:''});
 
