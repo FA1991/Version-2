@@ -33,6 +33,7 @@ const templates:Record<string,Record<string,string>>={
  'V = pi*r^2*h':{V:'V = pi*r^2*h',r:'r = sqrt(V/(pi*h))',h:'h = V/(pi*r^2)'},
  'V = l*w*h':{V:'V = l*w*h',l:'l = V/(w*h)',w:'w = V/(l*h)',h:'h = V/(l*w)'},
  'SA = 2*(l*w+l*h+w*h)':{SA:'SA = 2*(l*w+l*h+w*h)',l:'l = (SA/2-w*h)/(w+h)',w:'w = (SA/2-l*h)/(l+h)',h:'h = (SA/2-l*w)/(l+w)'},
+ 'SA = 2*(l*w+l*h+w*h)':{SA:'SA = 2*(l*w+l*h+w*h)',l:'l = (SA/2-w*h)/(w+h)',w:'w = (SA/2-l*h)/(l+h)',h:'h = (SA/2-l*w)/(l+w)'},
  'V = s^3':{V:'V = s^3',s:'s = cbrt(V)'},
  'V = (1/3)*pi*r^2*h':{V:'V = (1/3)*pi*r^2*h',r:'r = sqrt(3*V/(pi*h))',h:'h = 3*V/(pi*r^2)'},
  'V = 4*pi*r^3/3':{V:'V = 4*pi*r^3/3',r:'r = cbrt(3*V/(4*pi))'},
